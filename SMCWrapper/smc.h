@@ -106,5 +106,4 @@ typedef struct {
     SMCBytes_t              bytes;
 } SMCVal_t;
 
-
 #endif

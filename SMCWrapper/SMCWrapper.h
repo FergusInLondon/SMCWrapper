@@ -42,8 +42,17 @@
                        inBuffer: (char *)str;
 
 // "Public" methods; i.e the only real methods used externally.
--(BOOL) readKey:(char *)key intoNumber:(NSNumber **)value;
+-(BOOL) readKey:(char *)key intoNumber:(NSNumber **)value; // @todo: refactor signature to "asNumber"
 -(BOOL) readKey:(char *)key asString:(NSString **)str;
 
+/* @TODO: Implement methods for primitive types.
+**  -(int) readKey:(char *)key asInteger
+**  -(char *) readKey:(char *)key asCString
+*/
+
+/* @TODO: Implement method(s) for writing values to SMC.
+** -(BOOL) writeKey:(char *)key withValue:(dataType?)data
+**  Generating the appropriate struct may be a PITA.ss
+*/
 
 @end

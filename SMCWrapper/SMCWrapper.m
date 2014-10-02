@@ -259,6 +259,10 @@ static SMCWrapper *sharedInstance = nil;
                            ofType: (UInt32Char_t)dataType
                          inBuffer: (char *)str
 {
+    // @todo; really? There has to be a nicer version,
+    //  perhaps a dictionary of constant => format specifier.
+    //  - how this would deal with subsequent numerical calc
+    //    (i.e for base conversion) is anyones guess... (macros...?!)
     if ((strcmp(dataType, DATATYPE_UINT8) == 0) ||
         (strcmp(dataType, DATATYPE_UINT16) == 0) ||
         (strcmp(dataType, DATATYPE_UINT32) == 0))
