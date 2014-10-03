@@ -106,4 +106,12 @@ typedef struct {
     SMCBytes_t              bytes;
 } SMCVal_t;
 
+typedef enum {
+    SUCCESS = 0,
+    FAILURE_IOServiceGetMatchingServices = 1,
+    FAILURE_NO_SMC_FOUND = 2,
+    FAILURE_IOServiceOpen = 3,
+    FAILURE_CALLING_STRUCT_METHOD = 4
+} SMCState_t;
+
 #endif

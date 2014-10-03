@@ -44,6 +44,7 @@
 // "Public" methods; i.e the only real methods used externally.
 -(BOOL) readKey:(char *)key intoNumber:(NSNumber **)value; // @todo: refactor signature to "asNumber"
 -(BOOL) readKey:(char *)key asString:(NSString **)str;
+-(int) getErrorNumber;
 
 /* @TODO: Implement methods for primitive types.
 **  -(int) readKey:(char *)key asInteger

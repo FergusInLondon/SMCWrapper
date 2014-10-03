@@ -12,6 +12,8 @@
 io_connect_t conn;
 // Shared Instance (Singleton)
 static SMCWrapper *sharedInstance = nil;
+// Error number
+SMCState_t errValue = SUCCESS;
 
 /**
  * sharedWrapper - Singleton instance retreival method.
@@ -38,7 +40,7 @@ static SMCWrapper *sharedInstance = nil;
     mach_port_t   masterPort;
     io_iterator_t iterator;
     io_object_t   device;
-    
+
     // Master port allows RPC calls for user-space code to communicate with I/O kit
     result = IOMasterPort(MACH_PORT_NULL, &masterPort);
     
@@ -47,7 +49,7 @@ static SMCWrapper *sharedInstance = nil;
     result = IOServiceGetMatchingServices(masterPort, matchingDictionary, &iterator);
     if (result != kIOReturnSuccess)
     {
-        printf("Error: IOServiceGetMatchingServices() = %08x\n", result);
+        errValue = FAILURE_IOServiceGetMatchingServices;
         return NO;
     }
     
@@ -56,7 +58,7 @@ static SMCWrapper *sharedInstance = nil;
     IOObjectRelease(iterator);
     if (device == 0)
     {
-        printf("Error: no SMC found\n");
+        errValue = FAILURE_NO_SMC_FOUND;
         return NO;
     }
     
@@ -65,10 +67,11 @@ static SMCWrapper *sharedInstance = nil;
     IOObjectRelease(device);
     if (result != kIOReturnSuccess)
     {
-        printf("Error: IOServiceOpen() = %08x\n", result);
+        errValue = FAILURE_IOServiceOpen;
         return NO;
     }
     
+    errValue = SUCCESS;
     return YES;
 }
 
@@ -161,7 +164,8 @@ static SMCWrapper *sharedInstance = nil;
 
     
     if (result != kIOReturnSuccess){
-        return result;
+        errValue = FAILURE_CALLING_STRUCT_METHOD;
+        return NO;
     }
     
     // Populate our output structure (@todo - is this needed..?
@@ -182,10 +186,12 @@ static SMCWrapper *sharedInstance = nil;
            outputKeyDataIn: &outputStructure];
     
     if (result != kIOReturnSuccess){
-        return result;
+        errValue = FAILURE_CALLING_STRUCT_METHOD;
+        return NO;
     }
     
     memcpy(val->bytes, outputStructure.bytes, sizeof(outputStructure.bytes));
+    errValue = SUCCESS;
     return kIOReturnSuccess;
 }
 
@@ -199,7 +205,7 @@ static SMCWrapper *sharedInstance = nil;
     NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
     NSNumber *num;
     num = [NSNumber numberWithInt:0];
- 
+
     if (! [self readKey:key asString:&stringVal] ){
         num = [NSNumber numberWithInt:0];
         *value = num;
@@ -209,6 +215,8 @@ static SMCWrapper *sharedInstance = nil;
     [f setNumberStyle:NSNumberFormatterDecimalStyle];
     num = [f numberFromString:stringVal];
     *value = num;
+
+    errValue = SUCCESS;
     return YES;
 }
 
@@ -225,7 +233,6 @@ static SMCWrapper *sharedInstance = nil;
     result = [self SMCReadKey: key
                   outputValue: &val];
     
-    // Do value checking on val.
     if (result != kIOReturnSuccess) {
         *str = [[NSString alloc] initWithFormat:@""];
         return NO;
@@ -238,6 +245,7 @@ static SMCWrapper *sharedInstance = nil;
                          inBuffer: &cStr[0]];
     
     *str = [[NSString alloc] initWithCString:cStr encoding:NSUTF8StringEncoding];
+
     return YES;
 }
 
@@ -313,6 +321,10 @@ static SMCWrapper *sharedInstance = nil;
         snprintf(str, 15, "%.1f%% ", ntohs(*(UInt16*)bytes) * 100 / 65536.0);
 }
 
+
+-(int) getErrorNumber{
+    return errValue;
+}
 
 -(id) init{
     if (self = [super init]){
