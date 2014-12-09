@@ -307,6 +307,18 @@ static SMCWrapper *sharedInstance = nil;
         snprintf(str, 15, "%d ", (signed char)*bytes);
     else if (strcmp(dataType, DATATYPE_PWM) == 0 && dataSize == 2)
         snprintf(str, 15, "%.1f%% ", ntohs(*(UInt16*)bytes) * 100 / 65536.0);
+    else if (strcmp(dataType, DATATYPE_CHARSTAR) == 0)
+        snprintf(str, 15, "%s ", bytes);
+    else if (strcmp(val.dataType, DATATYPE_FLAG) == 0)
+        snprintf(str, 15, "%s ", bytes[0] ? "TRUE" : "FALSE");
+    else {
+        int i;
+        char tempAb[64];
+        for (i = 0; i < val.dataSize; i++) {
+            snprintf(tempAb+strlen(tempAb), 8, "%02x ", (unsigned char) val.bytes[i]);
+        }
+        snprintf(str, 15, "%s ", tempAb);
+    }
 }
 
 
