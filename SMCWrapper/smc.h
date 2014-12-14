@@ -57,11 +57,14 @@
 #define DATATYPE_SI8          "si8 "
 #define DATATYPE_SI16         "si16"
 
+#define DATATYPE_FLAG         "flag"
+#define DATATYPE_CHARSTAR     "ch8*"
 #define DATATYPE_PWM          "{pwm"
 
 // @todo: document these structures/types and work out
 //  where they're utilised.
-typedef struct {
+
+typedef struct SMCKeyData_vers_t{ //used to identify SMC firmware version
     char                  major;
     char                  minor;
     char                  build;
