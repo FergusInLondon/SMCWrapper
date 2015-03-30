@@ -505,7 +505,7 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
 	
 	// Mac OS X means rubbish FourCC style data type referencing
 	[self stringRepresentationForBytes:val.bytes
-							  withSize:val.dataType
+							  withSize:val.dataSize
 								ofType:val.dataType
 							  inBuffer:&cStr[0]];
 	
