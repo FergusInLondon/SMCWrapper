@@ -30,7 +30,7 @@
 #include <mach/machine.h>
 #include <libkern/OSAtomic.h>
 #include <cocoa/cocoa.h>
-
+#include "SMCWrapper.h"
 #include "smc.h"
 //#define STRIP_COMPATIBILIY
 
