@@ -23,15 +23,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <CoreFoundation/CoreFoundation.h>
-#include <IOKit/IOKitLib.h>
-#include <mach/machine.h>
-#include <libkern/OSAtomic.h>
-#include <cocoa/cocoa.h>
 #include "SMCWrapper.h"
-#include "smc.h"
+
 //#define STRIP_COMPATIBILIY
 
 // AppleSMC IOService connection

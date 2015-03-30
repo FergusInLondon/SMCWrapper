@@ -24,6 +24,13 @@
  */
 #include <sys/cdefs.h>
 #include <Availability.h>
+#include <stdio.h>
+#include <string.h>
+#include <CoreFoundation/CoreFoundation.h>
+#include <IOKit/IOKitLib.h>
+#include <mach/machine.h>
+#include <libkern/OSAtomic.h>
+#include <cocoa/cocoa.h>
 
 #ifndef __SMC_H__
 #define __SMC_H__
