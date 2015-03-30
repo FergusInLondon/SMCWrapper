@@ -72,14 +72,6 @@
 #define DATATYPE_FLAG         "flag"
 #define DATATYPE_CHARSTAR     "ch8*"
 
-// key values
-#define SMC_KEY_CPU_TEMP      "TC0P"
-#define SMC_KEY_FAN_SPEED     "F%dAc"
-#define SMC_KEY_FAN_NUM       "FNum"
-#define SMC_KEY_BATTERY_TEMP  "TB0T"
-
-
-
 typedef struct SMCKeyData_vers_t {
     char                  major;
     char                  minor;
@@ -130,6 +122,14 @@ typedef struct {
     UInt32Char_t            dataType;
     SMCBytes_t              bytes;
 } SMCVal_t;
+
+typedef enum {
+    SUCCESS = 0,
+    FAILURE_IOServiceGetMatchingServices = 1,
+    FAILURE_NO_SMC_FOUND = 2,
+    FAILURE_IOServiceOpen = 3,
+    FAILURE_CALLING_STRUCT_METHOD = 4
+} SMCState_t;
 
 @interface SMCWrapper : NSObject
 +(SMCWrapper *)sharedWrapper;
