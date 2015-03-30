@@ -30,7 +30,6 @@
 #endif
 
 #define KERNEL_INDEX_SMC      2
-
 #define SMC_CMD_READ_BYTES    5
 #define SMC_CMD_WRITE_BYTES   6
 #define SMC_CMD_READ_INDEX    8
@@ -69,8 +68,15 @@
 #define DATATYPE_PWM          "{pwm"
 #define DATATYPE_LSO          "{lso"
 #define DATATYPE_ALA          "{ala"
+
 #define DATATYPE_FLAG         "flag"
 #define DATATYPE_CHARSTAR     "ch8*"
+
+typedef char		SMCBytes_t[32];
+typedef char		UInt32Char_t[5];
+typedef char		Flag[1];
+typedef UInt		flag;
+typedef UInt16		PWMValue;
 
 typedef struct SMCKeyData_vers_t {
     char                  major;
@@ -94,8 +100,6 @@ typedef struct {
     char                  dataAttributes;
 } SMCKeyData_keyInfo_t;
 
-typedef char              SMCBytes_t[32];
-
 typedef struct {
     UInt32                  key;
     SMCKeyData_vers_t       vers;
@@ -107,14 +111,6 @@ typedef struct {
     UInt32                  data32;
     SMCBytes_t              bytes;
 } SMCKeyData_t;
-
-typedef char              UInt32Char_t[5];
-
-typedef char              Flag[1];
-typedef UInt8   flag;
-
-
-typedef UInt16 PWMValue;
 
 typedef struct {
     UInt32Char_t            key;
@@ -130,6 +126,7 @@ typedef enum {
     FAILURE_IOServiceOpen = 3,
     FAILURE_CALLING_STRUCT_METHOD = 4
 } SMCState_t;
+
 
 @interface SMCWrapper : NSObject
 +(SMCWrapper *)sharedWrapper;
