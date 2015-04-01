@@ -131,7 +131,8 @@ typedef enum {
     FAILURE_IOServiceGetMatchingServices = 1,
     FAILURE_NO_SMC_FOUND = 2,
     FAILURE_IOServiceOpen = 3,
-    FAILURE_CALLING_STRUCT_METHOD = 4
+    FAILURE_CALLING_STRUCT_METHOD = 4,
+	FAILURE_REPRESENTING_STRUCT = 5
 } SMCState_t;
 
 
