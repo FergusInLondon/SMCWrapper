@@ -310,68 +310,68 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
 					   		inBuffer: (char *)str
 {
 	if (dataSize > 0) {
-	if ((strcmp(dataType, DATATYPE_UINT8) == 0) ||
-		(strcmp(dataType, DATATYPE_UINT16) == 0) ||
-		(strcmp(dataType, DATATYPE_UINT32) == 0)) {
-		UInt32 uint= [self _strtoul:bytes forSize:dataSize inBase:10];
-		snprintf(str, 15, "%u ", (unsigned int)uint);
-	}
-	else if (strcmp(dataType, DATATYPE_FP1F) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.5f ", ntohs(*(UInt16*)bytes) / 32768.0);
-	else if (strcmp(dataType, DATATYPE_FP4C) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.5f ", ntohs(*(UInt16*)bytes) / 4096.0);
-	else if (strcmp(dataType, DATATYPE_FP5B) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.5f ", ntohs(*(UInt16*)bytes) / 2048.0);
-	else if (strcmp(dataType, DATATYPE_FP6A) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.4f ", ntohs(*(UInt16*)bytes) / 1024.0);
-	else if (strcmp(dataType, DATATYPE_FP79) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.4f ", ntohs(*(UInt16*)bytes) / 512.0);
-	else if (strcmp(dataType, DATATYPE_FP88) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.3f ", ntohs(*(UInt16*)bytes) / 256.0);
-	else if (strcmp(dataType, DATATYPE_FPA6) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.2f ", ntohs(*(UInt16*)bytes) / 64.0);
-	else if (strcmp(dataType, DATATYPE_FPC4) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.2f ", ntohs(*(UInt16*)bytes) / 16.0);
-	else if (strcmp(dataType, DATATYPE_FPE2) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.2f ", ntohs(*(UInt16*)bytes) / 4.0);
-	else if (strcmp(dataType, DATATYPE_SP1E) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.5f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 16384.0);
-	else if (strcmp(dataType, DATATYPE_SP3C) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.5f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 4096.0);
-	else if (strcmp(dataType, DATATYPE_SP4B) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.4f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 2048.0);
-	else if (strcmp(dataType, DATATYPE_SP5A) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.4f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 1024.0);
-	else if (strcmp(dataType, DATATYPE_SP69) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.3f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 512.0);
-	else if (strcmp(dataType, DATATYPE_SP78) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.3f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 256.0);
-	else if (strcmp(dataType, DATATYPE_SP87) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.3f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 128.0);
-	else if (strcmp(dataType, DATATYPE_SP96) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.2f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 64.0);
-	else if (strcmp(dataType, DATATYPE_SPB4) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.2f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 16.0);
-	else if (strcmp(dataType, DATATYPE_SPF0) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.0f ", (float)ntohs(*(UInt16*)bytes));
-	else if (strcmp(dataType, DATATYPE_SI16) == 0 && dataSize == 2)
-		snprintf(str, 15, "%d ", ntohs(*(SInt16*)bytes));
-	else if (strcmp(dataType, DATATYPE_SI8) == 0 && dataSize == 1)
-		snprintf(str, 15, "%d ", (signed char)*bytes);
-	else if (strcmp(dataType, DATATYPE_PWM) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.1f%% ", ntohs(*(UInt16*)bytes) * 100 / 65536.0);
-	else if (strcmp(dataType, DATATYPE_CHARSTAR) == 0)
-		snprintf(str, 15, "%s ", bytes);
-	else if (strcmp(dataType, DATATYPE_FLAG) == 0)
-		snprintf(str, 15, "%s ", bytes[0] ? "TRUE" : "FALSE");
-	else {
-		int i;
-		char tempAb[64];
-		for (i = 0; i < dataSize; i++) {
-			snprintf(tempAb+strlen(tempAb), 8, "%02x ", (unsigned char) bytes[i]);
+		if ((strcmp(dataType, DATATYPE_UINT8) == 0) ||
+			(strcmp(dataType, DATATYPE_UINT16) == 0) ||
+			(strcmp(dataType, DATATYPE_UINT32) == 0)) {
+			UInt32 uint= [self _strtoul:bytes forSize:dataSize inBase:10];
+			snprintf(str, 15, "%u ", (unsigned int)uint);
 		}
-		snprintf(str, 15, "%s ", tempAb);
-	}
+		else if (strcmp(dataType, DATATYPE_FP1F) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.5f ", ntohs(*(UInt16*)bytes) / 32768.0);
+		else if (strcmp(dataType, DATATYPE_FP4C) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.5f ", ntohs(*(UInt16*)bytes) / 4096.0);
+		else if (strcmp(dataType, DATATYPE_FP5B) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.5f ", ntohs(*(UInt16*)bytes) / 2048.0);
+		else if (strcmp(dataType, DATATYPE_FP6A) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.4f ", ntohs(*(UInt16*)bytes) / 1024.0);
+		else if (strcmp(dataType, DATATYPE_FP79) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.4f ", ntohs(*(UInt16*)bytes) / 512.0);
+		else if (strcmp(dataType, DATATYPE_FP88) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.3f ", ntohs(*(UInt16*)bytes) / 256.0);
+		else if (strcmp(dataType, DATATYPE_FPA6) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.2f ", ntohs(*(UInt16*)bytes) / 64.0);
+		else if (strcmp(dataType, DATATYPE_FPC4) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.2f ", ntohs(*(UInt16*)bytes) / 16.0);
+		else if (strcmp(dataType, DATATYPE_FPE2) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.2f ", ntohs(*(UInt16*)bytes) / 4.0);
+		else if (strcmp(dataType, DATATYPE_SP1E) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.5f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 16384.0);
+		else if (strcmp(dataType, DATATYPE_SP3C) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.5f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 4096.0);
+		else if (strcmp(dataType, DATATYPE_SP4B) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.4f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 2048.0);
+		else if (strcmp(dataType, DATATYPE_SP5A) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.4f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 1024.0);
+		else if (strcmp(dataType, DATATYPE_SP69) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.3f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 512.0);
+		else if (strcmp(dataType, DATATYPE_SP78) == 0/* && dataSize == 2*/)
+			snprintf(str, 15, "%.3f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 256.0);
+		else if (strcmp(dataType, DATATYPE_SP87) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.3f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 128.0);
+		else if (strcmp(dataType, DATATYPE_SP96) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.2f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 64.0);
+		else if (strcmp(dataType, DATATYPE_SPB4) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.2f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 16.0);
+		else if (strcmp(dataType, DATATYPE_SPF0) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.0f ", (float)ntohs(*(UInt16*)bytes));
+		else if (strcmp(dataType, DATATYPE_SI16) == 0 && dataSize == 2)
+			snprintf(str, 15, "%d ", ntohs(*(SInt16*)bytes));
+		else if (strcmp(dataType, DATATYPE_SI8) == 0 && dataSize == 1)
+			snprintf(str, 15, "%d ", (signed char)*bytes);
+		else if (strcmp(dataType, DATATYPE_PWM) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.1f%% ", ntohs(*(UInt16*)bytes) * 100 / 65536.0);
+		else if (strcmp(dataType, DATATYPE_CHARSTAR) == 0)
+			snprintf(str, 15, "%s ", bytes);
+		else if (strcmp(dataType, DATATYPE_FLAG) == 0)
+			snprintf(str, 15, "%s ", bytes[0] ? "TRUE" : "FALSE");
+		else {
+			int i;
+			char tempAb[64];
+			for (i = 0; i < dataSize; i++) {
+				snprintf(tempAb+strlen(tempAb), 8, "%02x ", (unsigned char) bytes[i]);
+			}
+			snprintf(str, 15, "%s ", tempAb);
+		}
 		return TRUE;
 	}
 	return FALSE;
