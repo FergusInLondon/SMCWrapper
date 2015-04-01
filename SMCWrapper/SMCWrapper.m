@@ -456,6 +456,50 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
 }
 
 /**
+ * stringRawRepresentationForBytes:withSize:ofType:toNSString - Retrieves a NSString raw (hex bytes)
+ *  representation of the given values ; returns a bool to indicate success or failure.
+ */
+-(BOOL) stringRawRepresentationForBytes: (SMCBytes_t)bytes
+							   withSize: (UInt32)dataSize
+								 ofType: (UInt32Char_t)dataType
+							 toNSString: (NSString**)abri
+{
+	if (dataSize > 0) {
+		int i;
+		char tempAb[64];
+		for (i = 0; i < dataSize; i++) {
+			snprintf(tempAb+strlen(tempAb), 8, "%02x ", (unsigned char) bytes[i]);
+		}
+		*abri = [[NSString alloc] initWithFormat:@"%s", tempAb];
+		return TRUE;
+	} else {
+		return TRUE;
+	}
+	return FALSE;
+}
+
+/**
+ * stringRawRepresentationForBytes:withSize:ofType:inBuffer - Retrieves a CString raw (hex bytes)
+ *  representation of the given values ; returns a bool to indicate success or failure.
+ */
+-(BOOL) stringRawRepresentationForBytes: (SMCBytes_t)bytes
+							   withSize: (UInt32)dataSize
+								 ofType: (UInt32Char_t)dataType
+							   inBuffer: (char *)str
+{
+	if (dataSize > 0) {
+		int i;
+		char tempAb[64];
+		for (i = 0; i < dataSize; i++) {
+			snprintf(tempAb+strlen(tempAb), 8, "%02x ", (unsigned char) bytes[i]);
+		}
+		snprintf(str, 15, "%s ", tempAb);
+		return TRUE;
+	}
+	return FALSE;
+}
+
+/**
  * stringRepresentationOfVal:inBuffer: - Retrieves a CString representation
  * of the given SMCVal_t ; returns a bool to indicate success or failure.
  */
@@ -475,6 +519,30 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
 	return [self stringRepresentationForBytes:val.bytes withSize:val.dataSize ofType:val.dataType toNSString:abri];
 }
 
+/**
+ * stringRawRepresentationOfVal:inBuffer: - Retrieves a NSString representation
+ * of the given SMCVal_t raw value (hex bytes); returns a bool to indicate success or failure.
+ */
+-(BOOL) stringRawRepresentationOfVal:(SMCVal_t)val
+							inBuffer:(char *)str
+{
+	return [self stringRepresentationForBytes:val.bytes withSize:val.dataSize ofType:val.dataType inBuffer:str];
+}
+
+/**
+ * stringRawRepresentationOfVal:toNSString: - Retrieves a NSString representation
+ * of the given SMCVal_t raw value (hex bytes); returns a bool to indicate success or failure.
+ */
+-(BOOL) stringRawRepresentationOfVal:(SMCVal_t)val
+						  toNSString:(NSString**)abri
+{
+	return [self stringRepresentationForBytes:val.bytes withSize:val.dataSize ofType:val.dataType toNSString:abri];
+}
+
+/**
+ * readKey:intoVal - Wrapper for the internal _smcReadKey that fills the given SMCVal_t,
+ * taking a NSString (not a CString) as the key name; returns a bool to indicate success or failure.
+ */
 -(BOOL) readKey:(NSString *)key intoVal:(SMCVal_t *)val {
 	kern_return_t result;
 	

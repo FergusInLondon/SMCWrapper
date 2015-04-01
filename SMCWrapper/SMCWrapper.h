@@ -146,10 +146,22 @@ typedef enum {
 							withSize: (UInt32)dataSize
 							  ofType: (UInt32Char_t)dataType
 						  toNSString: (NSString**)abri;
+-(BOOL) stringRawRepresentationForBytes: (SMCBytes_t)bytes
+							   withSize: (UInt32)dataSize
+								 ofType: (UInt32Char_t)dataType
+							 toNSString: (NSString**)abri;
+-(BOOL) stringRawRepresentationForBytes: (SMCBytes_t)bytes
+							   withSize: (UInt32)dataSize
+								 ofType: (UInt32Char_t)dataType
+							   inBuffer: (char *)str;
 -(BOOL) stringRepresentationOfVal:(SMCVal_t)val
 						 inBuffer: (char *)str;
 -(BOOL) stringRepresentationOfVal:(SMCVal_t)val
 					   toNSString:(NSString**)abri;
+-(BOOL) stringRawRepresentationOfVal:(SMCVal_t)val
+							inBuffer:(char *)str;
+-(BOOL) stringRawRepresentationOfVal:(SMCVal_t)val
+						  toNSString:(NSString**)abri;
 #ifndef STRIP_COMPATIBILITY
 -(BOOL) getStringRepresentation: (SMCBytes_t)bytes
 						forSize: (UInt32)dataSize
