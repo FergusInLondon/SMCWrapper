@@ -448,6 +448,7 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
 			}
 			*abri = [[NSString alloc] initWithFormat:@"%s", tempAb];
 		}
+		return TRUE;
 	} else {
 		return TRUE;
 	}
