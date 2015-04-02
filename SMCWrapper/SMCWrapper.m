@@ -168,8 +168,8 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
  *  IOConnectCallStructMethod - which is responsible for IOService calls.
  */
 -(kern_return_t) _smcCall:(int)index
-				 forKeyData:(SMCKeyData_t *)inputStructure
-				 toKeyData:(SMCKeyData_t *)outputStructure
+			   forKeyData:(SMCKeyData_t *)inputStructure
+				toKeyData:(SMCKeyData_t *)outputStructure
 {
 	size_t   structureInputSize;
 	size_t   structureOutputSize;
@@ -202,8 +202,8 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
 	inputStructure.data8 = SMC_CMD_READ_KEYINFO;
 	
 	result = [self _smcCall: KERNEL_INDEX_SMC
-				forKeyData: &inputStructure
-		   		toKeyData: &outputStructure];
+				 forKeyData: &inputStructure
+				  toKeyData: &outputStructure];
 	if (result != kIOReturnSuccess)
 		return result;
 	
@@ -307,7 +307,7 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
 -(BOOL) stringRepresentationForBytes: (SMCBytes_t)bytes
 							withSize: (UInt32)dataSize
 							  ofType: (UInt32Char_t)dataType
-					   		inBuffer: (char *)str
+							inBuffer: (char *)str
 {
 	if (dataSize > 0) {
 		if ((strcmp(dataType, DATATYPE_UINT8) == 0) ||
@@ -378,13 +378,13 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
 }
 
 /**
- * stringRepresentationForBytes:withSize:ofType:toNSString - Retrieves a NSString
+ * stringRepresentationForBytes:withSize:ofType:intoString - Retrieves a NSString
  *  representation of the given values ; returns a bool to indicate success or failure.
  */
 -(BOOL) stringRepresentationForBytes: (SMCBytes_t)bytes
 							withSize: (UInt32)dataSize
 							  ofType: (UInt32Char_t)dataType
-						  toNSString: (NSString**)abri
+						  intoString: (NSString**)abri
 {
 	if (dataSize > 0) {
 		if ((strcmp(dataType, DATATYPE_UINT8) == 0) ||
@@ -449,20 +449,18 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
 			*abri = [[NSString alloc] initWithFormat:@"%s", tempAb];
 		}
 		return TRUE;
-	} else {
-		return TRUE;
 	}
 	return FALSE;
 }
 
 /**
- * stringRawRepresentationForBytes:withSize:ofType:toNSString - Retrieves a NSString raw (hex bytes)
+ * stringRawRepresentationForBytes:withSize:ofType:intoString - Retrieves a NSString raw (hex bytes)
  *  representation of the given values ; returns a bool to indicate success or failure.
  */
 -(BOOL) stringRawRepresentationForBytes: (SMCBytes_t)bytes
 							   withSize: (UInt32)dataSize
 								 ofType: (UInt32Char_t)dataType
-							 toNSString: (NSString**)abri
+							 intoString: (NSString**)abri
 {
 	if (dataSize > 0) {
 		int i;
@@ -471,8 +469,6 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
 			snprintf(tempAb+strlen(tempAb), 8, "%02x ", (unsigned char) bytes[i]);
 		}
 		*abri = [[NSString alloc] initWithFormat:@"%s", tempAb];
-		return TRUE;
-	} else {
 		return TRUE;
 	}
 	return FALSE;
@@ -510,13 +506,13 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
 }
 
 /**
- * stringRepresentationOfVal:toNSString: - Retrieves a NSString representation
+ * stringRepresentationOfVal:intoString: - Retrieves a NSString representation
  * of the given SMCVal_t ; returns a bool to indicate success or failure.
  */
 -(BOOL) stringRepresentationOfVal:(SMCVal_t)val
-					   toNSString:(NSString**)abri
+					   intoString:(NSString**)abri
 {
-	return [self stringRepresentationForBytes:val.bytes withSize:val.dataSize ofType:val.dataType toNSString:abri];
+	return [self stringRepresentationForBytes:val.bytes withSize:val.dataSize ofType:val.dataType intoString:abri];
 }
 
 /**
@@ -530,13 +526,26 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
 }
 
 /**
- * stringRawRepresentationOfVal:toNSString: - Retrieves a NSString representation
+ * stringRawRepresentationOfVal:intoString: - Retrieves a NSString representation
  * of the given SMCVal_t raw value (hex bytes); returns a bool to indicate success or failure.
  */
 -(BOOL) stringRawRepresentationOfVal:(SMCVal_t)val
-						  toNSString:(NSString**)abri
+						  intoString:(NSString**)abri
 {
-	return [self stringRepresentationForBytes:val.bytes withSize:val.dataSize ofType:val.dataType toNSString:abri];
+	return [self stringRepresentationForBytes:val.bytes withSize:val.dataSize ofType:val.dataType intoString:abri];
+}
+
+/**
+ * stringRawRepresentationOfVal:intoString: - Retrieves a NSString representation
+ * of the given SMCVal_t raw value (hex bytes); returns a bool to indicate success or failure.
+ */
+-(BOOL) typeOfVal:(SMCVal_t)val intoString:(NSString **)str
+{
+	if (val.dataType) { //check if belongs to type array
+		*str = [[NSString alloc] initWithCString:val.dataType encoding:NSUTF8StringEncoding];
+		return TRUE;
+	}
+	return FALSE;
 }
 
 /**
@@ -546,7 +555,7 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
 -(BOOL) readKey:(NSString *)key intoVal:(SMCVal_t *)val {
 	kern_return_t result;
 	
-	result = [self _smcReadKey:[key UTF8String] toValue: val];
+	result = [self _smcReadKey:(char*)[key UTF8String] toValue: val];
 	// Do value checking on val.
 	if (result != kIOReturnSuccess) {
 		return NO;
@@ -564,7 +573,7 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
 	SMCVal_t val;
 	kern_return_t result;
 	
-	result = [self _smcReadKey:[key UTF8String] toValue: &val];
+	result = [self _smcReadKey:(char*)[key UTF8String] toValue: &val];
 	
 	// Do value checking on val.
 	if (result != kIOReturnSuccess) {
@@ -637,8 +646,8 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
 		
 		result = [self _smcReadKey:key toValue:&val]; //reads key (by its name, see above)
 		stringKey = [NSString stringWithFormat:@"%s" , key];
-		[self stringRepresentationOfVal:val toNSString:&valueKey];
-
+		[self stringRepresentationOfVal:val intoString:&valueKey];
+		
 		typeKey = [NSString stringWithFormat:@"%-4s",val.dataType];
 		[*valDict setObject:valueKey forKey:stringKey];
 		[*typeDict setObject:typeKey forKey:stringKey];

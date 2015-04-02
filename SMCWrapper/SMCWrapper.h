@@ -146,11 +146,11 @@ typedef enum {
 -(BOOL) stringRepresentationForBytes: (SMCBytes_t)bytes
 							withSize: (UInt32)dataSize
 							  ofType: (UInt32Char_t)dataType
-						  toNSString: (NSString**)abri;
+						  intoString: (NSString**)abri;
 -(BOOL) stringRawRepresentationForBytes: (SMCBytes_t)bytes
 							   withSize: (UInt32)dataSize
 								 ofType: (UInt32Char_t)dataType
-							 toNSString: (NSString**)abri;
+							 intoString: (NSString**)abri;
 -(BOOL) stringRawRepresentationForBytes: (SMCBytes_t)bytes
 							   withSize: (UInt32)dataSize
 								 ofType: (UInt32Char_t)dataType
@@ -158,11 +158,11 @@ typedef enum {
 -(BOOL) stringRepresentationOfVal:(SMCVal_t)val
 						 inBuffer: (char *)str;
 -(BOOL) stringRepresentationOfVal:(SMCVal_t)val
-					   toNSString:(NSString**)abri;
+					   intoString:(NSString**)abri;
 -(BOOL) stringRawRepresentationOfVal:(SMCVal_t)val
 							inBuffer:(char *)str;
 -(BOOL) stringRawRepresentationOfVal:(SMCVal_t)val
-						  toNSString:(NSString**)abri;
+						  intoString:(NSString**)abri;
 #ifndef STRIP_COMPATIBILITY
 -(BOOL) getStringRepresentation: (SMCBytes_t)bytes
 						forSize: (UInt32)dataSize
@@ -178,5 +178,6 @@ __deprecated_msg("Use readKey:intoString: instead.");
 -(BOOL) readKey:(NSString *)key intoVal:(SMCVal_t *)val;
 -(BOOL) readKey:(NSString *)key intoString:(NSString **)str;
 -(BOOL) readKey:(NSString *)key intoNumber:(NSNumber **)value;
+-(BOOL) typeOfVal:(SMCVal_t)val intoString:(NSString **)str;
 -(void) dealloc;
 @end
