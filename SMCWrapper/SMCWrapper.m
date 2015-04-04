@@ -522,7 +522,7 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
 -(BOOL) stringRawRepresentationOfVal:(SMCVal_t)val
 							inBuffer:(char *)str
 {
-	return [self stringRepresentationForBytes:val.bytes withSize:val.dataSize ofType:val.dataType inBuffer:str];
+	return [self stringRawRepresentationForBytes:val.bytes withSize:val.dataSize ofType:val.dataType inBuffer:str];
 }
 
 /**
@@ -532,7 +532,7 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
 -(BOOL) stringRawRepresentationOfVal:(SMCVal_t)val
 						  intoString:(NSString**)abri
 {
-	return [self stringRepresentationForBytes:val.bytes withSize:val.dataSize ofType:val.dataType intoString:abri];
+	return [self stringRawRepresentationForBytes:val.bytes withSize:val.dataSize ofType:val.dataType intoString:abri];
 }
 
 /**
