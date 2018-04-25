@@ -1,3 +1,7 @@
+# This repository is ARCHIVED and UNMAINTAINED. I no longer have any systems running Mac OS X either, so continued development *will not* happen.
+
+---
+
 # SMCWrapper
 ### A little OOP colour around a grey API.
 
