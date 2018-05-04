@@ -24,13 +24,19 @@
  */
 #include <sys/cdefs.h>
 #include <Availability.h>
+#include <stdio.h>
+#include <string.h>
+#include <CoreFoundation/CoreFoundation.h>
+#include <IOKit/IOKitLib.h>
+#include <mach/machine.h>
+#include <libkern/OSAtomic.h>
+#include <cocoa/cocoa.h>
 
 #ifndef __SMC_H__
 #define __SMC_H__
 #endif
 
 #define KERNEL_INDEX_SMC      2
-
 #define SMC_CMD_READ_BYTES    5
 #define SMC_CMD_WRITE_BYTES   6
 #define SMC_CMD_READ_INDEX    8
@@ -69,16 +75,15 @@
 #define DATATYPE_PWM          "{pwm"
 #define DATATYPE_LSO          "{lso"
 #define DATATYPE_ALA          "{ala"
+
 #define DATATYPE_FLAG         "flag"
 #define DATATYPE_CHARSTAR     "ch8*"
 
-// key values
-#define SMC_KEY_CPU_TEMP      "TC0P"
-#define SMC_KEY_FAN_SPEED     "F%dAc"
-#define SMC_KEY_FAN_NUM       "FNum"
-#define SMC_KEY_BATTERY_TEMP  "TB0T"
-
-
+typedef char		SMCBytes_t[32];
+typedef char		UInt32Char_t[5];
+typedef char		Flag[1];
+typedef UInt		flag;
+typedef UInt16		PWMValue;
 
 typedef struct SMCKeyData_vers_t {
     char                  major;
@@ -102,8 +107,6 @@ typedef struct {
     char                  dataAttributes;
 } SMCKeyData_keyInfo_t;
 
-typedef char              SMCBytes_t[32];
-
 typedef struct {
     UInt32                  key;
     SMCKeyData_vers_t       vers;
@@ -116,20 +119,22 @@ typedef struct {
     SMCBytes_t              bytes;
 } SMCKeyData_t;
 
-typedef char              UInt32Char_t[5];
-
-typedef char              Flag[1];
-typedef UInt8   flag;
-
-
-typedef UInt16 PWMValue;
-
 typedef struct {
     UInt32Char_t            key;
     UInt32                  dataSize;
     UInt32Char_t            dataType;
     SMCBytes_t              bytes;
 } SMCVal_t;
+
+typedef enum {
+    SUCCESS = 0,
+    FAILURE_IOServiceGetMatchingServices = 1,
+    FAILURE_NO_SMC_FOUND = 2,
+    FAILURE_IOServiceOpen = 3,
+    FAILURE_CALLING_STRUCT_METHOD = 4,
+	FAILURE_REPRESENTING_STRUCT = 5
+} SMCState_t;
+
 
 @interface SMCWrapper : NSObject
 +(SMCWrapper *)sharedWrapper;
@@ -141,11 +146,23 @@ typedef struct {
 -(BOOL) stringRepresentationForBytes: (SMCBytes_t)bytes
 							withSize: (UInt32)dataSize
 							  ofType: (UInt32Char_t)dataType
-						  toNSString: (NSString**)abri;
+						  intoString: (NSString**)abri;
+-(BOOL) stringRawRepresentationForBytes: (SMCBytes_t)bytes
+							   withSize: (UInt32)dataSize
+								 ofType: (UInt32Char_t)dataType
+							 intoString: (NSString**)abri;
+-(BOOL) stringRawRepresentationForBytes: (SMCBytes_t)bytes
+							   withSize: (UInt32)dataSize
+								 ofType: (UInt32Char_t)dataType
+							   inBuffer: (char *)str;
 -(BOOL) stringRepresentationOfVal:(SMCVal_t)val
 						 inBuffer: (char *)str;
 -(BOOL) stringRepresentationOfVal:(SMCVal_t)val
-					   toNSString:(NSString**)abri;
+					   intoString:(NSString**)abri;
+-(BOOL) stringRawRepresentationOfVal:(SMCVal_t)val
+							inBuffer:(char *)str;
+-(BOOL) stringRawRepresentationOfVal:(SMCVal_t)val
+						  intoString:(NSString**)abri;
 #ifndef STRIP_COMPATIBILITY
 -(BOOL) getStringRepresentation: (SMCBytes_t)bytes
 						forSize: (UInt32)dataSize
@@ -161,5 +178,6 @@ __deprecated_msg("Use readKey:intoString: instead.");
 -(BOOL) readKey:(NSString *)key intoVal:(SMCVal_t *)val;
 -(BOOL) readKey:(NSString *)key intoString:(NSString **)str;
 -(BOOL) readKey:(NSString *)key intoNumber:(NSNumber **)value;
+-(BOOL) typeOfVal:(SMCVal_t)val intoString:(NSString **)str;
 -(void) dealloc;
 @end

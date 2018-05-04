@@ -23,15 +23,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <CoreFoundation/CoreFoundation.h>
-#include <IOKit/IOKitLib.h>
-#include <mach/machine.h>
-#include <libkern/OSAtomic.h>
-#include <cocoa/cocoa.h>
+#include "SMCWrapper.h"
 
-#include "smc.h"
 //#define STRIP_COMPATIBILIY
 
 // AppleSMC IOService connection
@@ -175,8 +168,8 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
  *  IOConnectCallStructMethod - which is responsible for IOService calls.
  */
 -(kern_return_t) _smcCall:(int)index
-				 forKeyData:(SMCKeyData_t *)inputStructure
-				 toKeyData:(SMCKeyData_t *)outputStructure
+			   forKeyData:(SMCKeyData_t *)inputStructure
+				toKeyData:(SMCKeyData_t *)outputStructure
 {
 	size_t   structureInputSize;
 	size_t   structureOutputSize;
@@ -209,8 +202,8 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
 	inputStructure.data8 = SMC_CMD_READ_KEYINFO;
 	
 	result = [self _smcCall: KERNEL_INDEX_SMC
-				forKeyData: &inputStructure
-		   		toKeyData: &outputStructure];
+				 forKeyData: &inputStructure
+				  toKeyData: &outputStructure];
 	if (result != kIOReturnSuccess)
 		return result;
 	
@@ -314,84 +307,84 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
 -(BOOL) stringRepresentationForBytes: (SMCBytes_t)bytes
 							withSize: (UInt32)dataSize
 							  ofType: (UInt32Char_t)dataType
-					   		inBuffer: (char *)str
+							inBuffer: (char *)str
 {
 	if (dataSize > 0) {
-	if ((strcmp(dataType, DATATYPE_UINT8) == 0) ||
-		(strcmp(dataType, DATATYPE_UINT16) == 0) ||
-		(strcmp(dataType, DATATYPE_UINT32) == 0)) {
-		UInt32 uint= [self _strtoul:bytes forSize:dataSize inBase:10];
-		snprintf(str, 15, "%u ", (unsigned int)uint);
-	}
-	else if (strcmp(dataType, DATATYPE_FP1F) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.5f ", ntohs(*(UInt16*)bytes) / 32768.0);
-	else if (strcmp(dataType, DATATYPE_FP4C) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.5f ", ntohs(*(UInt16*)bytes) / 4096.0);
-	else if (strcmp(dataType, DATATYPE_FP5B) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.5f ", ntohs(*(UInt16*)bytes) / 2048.0);
-	else if (strcmp(dataType, DATATYPE_FP6A) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.4f ", ntohs(*(UInt16*)bytes) / 1024.0);
-	else if (strcmp(dataType, DATATYPE_FP79) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.4f ", ntohs(*(UInt16*)bytes) / 512.0);
-	else if (strcmp(dataType, DATATYPE_FP88) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.3f ", ntohs(*(UInt16*)bytes) / 256.0);
-	else if (strcmp(dataType, DATATYPE_FPA6) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.2f ", ntohs(*(UInt16*)bytes) / 64.0);
-	else if (strcmp(dataType, DATATYPE_FPC4) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.2f ", ntohs(*(UInt16*)bytes) / 16.0);
-	else if (strcmp(dataType, DATATYPE_FPE2) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.2f ", ntohs(*(UInt16*)bytes) / 4.0);
-	else if (strcmp(dataType, DATATYPE_SP1E) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.5f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 16384.0);
-	else if (strcmp(dataType, DATATYPE_SP3C) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.5f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 4096.0);
-	else if (strcmp(dataType, DATATYPE_SP4B) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.4f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 2048.0);
-	else if (strcmp(dataType, DATATYPE_SP5A) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.4f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 1024.0);
-	else if (strcmp(dataType, DATATYPE_SP69) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.3f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 512.0);
-	else if (strcmp(dataType, DATATYPE_SP78) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.3f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 256.0);
-	else if (strcmp(dataType, DATATYPE_SP87) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.3f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 128.0);
-	else if (strcmp(dataType, DATATYPE_SP96) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.2f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 64.0);
-	else if (strcmp(dataType, DATATYPE_SPB4) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.2f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 16.0);
-	else if (strcmp(dataType, DATATYPE_SPF0) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.0f ", (float)ntohs(*(UInt16*)bytes));
-	else if (strcmp(dataType, DATATYPE_SI16) == 0 && dataSize == 2)
-		snprintf(str, 15, "%d ", ntohs(*(SInt16*)bytes));
-	else if (strcmp(dataType, DATATYPE_SI8) == 0 && dataSize == 1)
-		snprintf(str, 15, "%d ", (signed char)*bytes);
-	else if (strcmp(dataType, DATATYPE_PWM) == 0 && dataSize == 2)
-		snprintf(str, 15, "%.1f%% ", ntohs(*(UInt16*)bytes) * 100 / 65536.0);
-	else if (strcmp(dataType, DATATYPE_CHARSTAR) == 0)
-		snprintf(str, 15, "%s ", bytes);
-	else if (strcmp(dataType, DATATYPE_FLAG) == 0)
-		snprintf(str, 15, "%s ", bytes[0] ? "TRUE" : "FALSE");
-	else {
-		int i;
-		char tempAb[64];
-		for (i = 0; i < dataSize; i++) {
-			snprintf(tempAb+strlen(tempAb), 8, "%02x ", (unsigned char) bytes[i]);
+		if ((strcmp(dataType, DATATYPE_UINT8) == 0) ||
+			(strcmp(dataType, DATATYPE_UINT16) == 0) ||
+			(strcmp(dataType, DATATYPE_UINT32) == 0)) {
+			UInt32 uint= [self _strtoul:bytes forSize:dataSize inBase:10];
+			snprintf(str, 15, "%u ", (unsigned int)uint);
 		}
-		snprintf(str, 15, "%s ", tempAb);
-	}
+		else if (strcmp(dataType, DATATYPE_FP1F) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.5f ", ntohs(*(UInt16*)bytes) / 32768.0);
+		else if (strcmp(dataType, DATATYPE_FP4C) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.5f ", ntohs(*(UInt16*)bytes) / 4096.0);
+		else if (strcmp(dataType, DATATYPE_FP5B) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.5f ", ntohs(*(UInt16*)bytes) / 2048.0);
+		else if (strcmp(dataType, DATATYPE_FP6A) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.4f ", ntohs(*(UInt16*)bytes) / 1024.0);
+		else if (strcmp(dataType, DATATYPE_FP79) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.4f ", ntohs(*(UInt16*)bytes) / 512.0);
+		else if (strcmp(dataType, DATATYPE_FP88) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.3f ", ntohs(*(UInt16*)bytes) / 256.0);
+		else if (strcmp(dataType, DATATYPE_FPA6) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.2f ", ntohs(*(UInt16*)bytes) / 64.0);
+		else if (strcmp(dataType, DATATYPE_FPC4) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.2f ", ntohs(*(UInt16*)bytes) / 16.0);
+		else if (strcmp(dataType, DATATYPE_FPE2) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.2f ", ntohs(*(UInt16*)bytes) / 4.0);
+		else if (strcmp(dataType, DATATYPE_SP1E) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.5f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 16384.0);
+		else if (strcmp(dataType, DATATYPE_SP3C) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.5f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 4096.0);
+		else if (strcmp(dataType, DATATYPE_SP4B) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.4f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 2048.0);
+		else if (strcmp(dataType, DATATYPE_SP5A) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.4f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 1024.0);
+		else if (strcmp(dataType, DATATYPE_SP69) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.3f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 512.0);
+		else if (strcmp(dataType, DATATYPE_SP78) == 0/* && dataSize == 2*/)
+			snprintf(str, 15, "%.3f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 256.0);
+		else if (strcmp(dataType, DATATYPE_SP87) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.3f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 128.0);
+		else if (strcmp(dataType, DATATYPE_SP96) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.2f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 64.0);
+		else if (strcmp(dataType, DATATYPE_SPB4) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.2f ", ((SInt16)ntohs(*(UInt16*)bytes)) / 16.0);
+		else if (strcmp(dataType, DATATYPE_SPF0) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.0f ", (float)ntohs(*(UInt16*)bytes));
+		else if (strcmp(dataType, DATATYPE_SI16) == 0 && dataSize == 2)
+			snprintf(str, 15, "%d ", ntohs(*(SInt16*)bytes));
+		else if (strcmp(dataType, DATATYPE_SI8) == 0 && dataSize == 1)
+			snprintf(str, 15, "%d ", (signed char)*bytes);
+		else if (strcmp(dataType, DATATYPE_PWM) == 0 && dataSize == 2)
+			snprintf(str, 15, "%.1f%% ", ntohs(*(UInt16*)bytes) * 100 / 65536.0);
+		else if (strcmp(dataType, DATATYPE_CHARSTAR) == 0)
+			snprintf(str, 15, "%s ", bytes);
+		else if (strcmp(dataType, DATATYPE_FLAG) == 0)
+			snprintf(str, 15, "%s ", bytes[0] ? "TRUE" : "FALSE");
+		else {
+			int i;
+			char tempAb[64];
+			for (i = 0; i < dataSize; i++) {
+				snprintf(tempAb+strlen(tempAb), 8, "%02x ", (unsigned char) bytes[i]);
+			}
+			snprintf(str, 15, "%s ", tempAb);
+		}
 		return TRUE;
 	}
 	return FALSE;
 }
 
 /**
- * stringRepresentationForBytes:withSize:ofType:toNSString - Retrieves a NSString
+ * stringRepresentationForBytes:withSize:ofType:intoString - Retrieves a NSString
  *  representation of the given values ; returns a bool to indicate success or failure.
  */
 -(BOOL) stringRepresentationForBytes: (SMCBytes_t)bytes
 							withSize: (UInt32)dataSize
 							  ofType: (UInt32Char_t)dataType
-						  toNSString: (NSString**)abri
+						  intoString: (NSString**)abri
 {
 	if (dataSize > 0) {
 		if ((strcmp(dataType, DATATYPE_UINT8) == 0) ||
@@ -455,7 +448,48 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
 			}
 			*abri = [[NSString alloc] initWithFormat:@"%s", tempAb];
 		}
-	} else {
+		return TRUE;
+	}
+	return FALSE;
+}
+
+/**
+ * stringRawRepresentationForBytes:withSize:ofType:intoString - Retrieves a NSString raw (hex bytes)
+ *  representation of the given values ; returns a bool to indicate success or failure.
+ */
+-(BOOL) stringRawRepresentationForBytes: (SMCBytes_t)bytes
+							   withSize: (UInt32)dataSize
+								 ofType: (UInt32Char_t)dataType
+							 intoString: (NSString**)abri
+{
+	if (dataSize > 0) {
+		int i;
+		char tempAb[64];
+		for (i = 0; i < dataSize; i++) {
+			snprintf(tempAb+strlen(tempAb), 8, "%02x ", (unsigned char) bytes[i]);
+		}
+		*abri = [[NSString alloc] initWithFormat:@"%s", tempAb];
+		return TRUE;
+	}
+	return FALSE;
+}
+
+/**
+ * stringRawRepresentationForBytes:withSize:ofType:inBuffer - Retrieves a CString raw (hex bytes)
+ *  representation of the given values ; returns a bool to indicate success or failure.
+ */
+-(BOOL) stringRawRepresentationForBytes: (SMCBytes_t)bytes
+							   withSize: (UInt32)dataSize
+								 ofType: (UInt32Char_t)dataType
+							   inBuffer: (char *)str
+{
+	if (dataSize > 0) {
+		int i;
+		char tempAb[64];
+		for (i = 0; i < dataSize; i++) {
+			snprintf(tempAb+strlen(tempAb), 8, "%02x ", (unsigned char) bytes[i]);
+		}
+		snprintf(str, 15, "%s ", tempAb);
 		return TRUE;
 	}
 	return FALSE;
@@ -472,19 +506,56 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
 }
 
 /**
- * stringRepresentationOfVal:toNSString: - Retrieves a NSString representation
+ * stringRepresentationOfVal:intoString: - Retrieves a NSString representation
  * of the given SMCVal_t ; returns a bool to indicate success or failure.
  */
 -(BOOL) stringRepresentationOfVal:(SMCVal_t)val
-					   toNSString:(NSString**)abri
+					   intoString:(NSString**)abri
 {
-	return [self stringRepresentationForBytes:val.bytes withSize:val.dataSize ofType:val.dataType toNSString:abri];
+	return [self stringRepresentationForBytes:val.bytes withSize:val.dataSize ofType:val.dataType intoString:abri];
 }
 
+/**
+ * stringRawRepresentationOfVal:inBuffer: - Retrieves a NSString representation
+ * of the given SMCVal_t raw value (hex bytes); returns a bool to indicate success or failure.
+ */
+-(BOOL) stringRawRepresentationOfVal:(SMCVal_t)val
+							inBuffer:(char *)str
+{
+	return [self stringRawRepresentationForBytes:val.bytes withSize:val.dataSize ofType:val.dataType inBuffer:str];
+}
+
+/**
+ * stringRawRepresentationOfVal:intoString: - Retrieves a NSString representation
+ * of the given SMCVal_t raw value (hex bytes); returns a bool to indicate success or failure.
+ */
+-(BOOL) stringRawRepresentationOfVal:(SMCVal_t)val
+						  intoString:(NSString**)abri
+{
+	return [self stringRawRepresentationForBytes:val.bytes withSize:val.dataSize ofType:val.dataType intoString:abri];
+}
+
+/**
+ * stringRawRepresentationOfVal:intoString: - Retrieves a NSString representation
+ * of the given SMCVal_t raw value (hex bytes); returns a bool to indicate success or failure.
+ */
+-(BOOL) typeOfVal:(SMCVal_t)val intoString:(NSString **)str
+{
+	if (val.dataType) { //check if belongs to type array
+		*str = [[NSString alloc] initWithCString:val.dataType encoding:NSUTF8StringEncoding];
+		return TRUE;
+	}
+	return FALSE;
+}
+
+/**
+ * readKey:intoVal - Wrapper for the internal _smcReadKey that fills the given SMCVal_t,
+ * taking a NSString (not a CString) as the key name; returns a bool to indicate success or failure.
+ */
 -(BOOL) readKey:(NSString *)key intoVal:(SMCVal_t *)val {
 	kern_return_t result;
 	
-	result = [self _smcReadKey:[key UTF8String] toValue: val];
+	result = [self _smcReadKey:(char*)[key UTF8String] toValue: val];
 	// Do value checking on val.
 	if (result != kIOReturnSuccess) {
 		return NO;
@@ -502,7 +573,7 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
 	SMCVal_t val;
 	kern_return_t result;
 	
-	result = [self _smcReadKey:[key UTF8String] toValue: &val];
+	result = [self _smcReadKey:(char*)[key UTF8String] toValue: &val];
 	
 	// Do value checking on val.
 	if (result != kIOReturnSuccess) {
@@ -512,7 +583,7 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
 	
 	// Mac OS X means rubbish FourCC style data type referencing
 	[self stringRepresentationForBytes:val.bytes
-							  withSize:val.dataType
+							  withSize:val.dataSize
 								ofType:val.dataType
 							  inBuffer:&cStr[0]];
 	
@@ -575,8 +646,8 @@ __deprecated_msg("Use _smcCall:forKeyData: toKeyData: instead.");
 		
 		result = [self _smcReadKey:key toValue:&val]; //reads key (by its name, see above)
 		stringKey = [NSString stringWithFormat:@"%s" , key];
-		[self stringRepresentationOfVal:val toNSString:&valueKey];
-
+		[self stringRepresentationOfVal:val intoString:&valueKey];
+		
 		typeKey = [NSString stringWithFormat:@"%-4s",val.dataType];
 		[*valDict setObject:valueKey forKey:stringKey];
 		[*typeDict setObject:typeKey forKey:stringKey];
