@@ -5,6 +5,8 @@
 # SMCWrapper
 ### A little OOP colour around a grey API.
 
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/fmorrow/SMCWrapper?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 #### What is SMCWrapper?
 
 If you've ever looked under the hood at a Mac OS X application for controlling fans or reading sensor data, then you will undoubtedly have seen two files - ```smc.c``` and ```smc.h```. Used in just about every project that relies upon reading SMC values.
